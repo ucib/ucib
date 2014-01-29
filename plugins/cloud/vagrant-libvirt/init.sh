@@ -1,0 +1,11 @@
+cloud_vagrant_libvirt_usage() {
+	usage_section "vagrant-libvirt box"
+	
+	usage_description "This plugin builds a 'Vagrant box' suitable for
+	                  use with the vagrant-libvirt plugin."
+}
+
+register_usage "cloud_vagrant_libvirt_usage"
+	
+load_plugin_or_die "misc/raw-image-file"
+load_plugin_or_die "misc/grub-bootloader"

@@ -1,0 +1,223 @@
+#!/bin/bash
+
+# The Universal Cloud Image Builder
+#
+# See README.md for help.
+#
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License version 3, as
+#   published by the Free Software Foundation.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License along
+#   with this program; if not, see <http://www.gnu.org/licences/>
+
+# Thou must run *everything* successfully or I shall smite thee
+set -e
+set -o pipefail
+
+# Back to default everything, please
+export LANG="C"
+export LC_ALL="C"
+
+ROOT="$(dirname $(readlink -f $0))"
+
+source "${ROOT}/lib/functions.sh"
+
+# This is the set of the *unparsed* command line options.  As `optparse` is
+# called by plugins, the requested options are removed from this array.  If
+# there are any options left after all plugins have been called, then
+# unknown options were passed and we'll bomb out.
+ARGV=("$@")
+
+# A hash containing <optname> => <value> mappings for options which have
+# been parsed.
+declare -A OPTS
+
+# Perhaps you'd like to see behind the kimono?
+parseopt "trace"
+if [ $(optval "trace") = "y" ]; then
+	set -x
+fi
+
+# Perhaps you'd like some debugging in your day?
+parseopt "debug"
+if [ $(optval "debug") = "y" ]; then
+	DEBUG="y"
+else
+	# You never know when someone might have exported DEBUG into the
+	# process environment...
+	DEBUG=""
+fi
+
+parseopt "tasklist"
+
+# The map of registered task names to task files.
+declare -A TASKS
+
+# The list of already-loaded plugins
+declare -A PLUGINS
+
+# The list of functions that should be called at exit -- as the trap below
+# will do for us automagically.
+declare -a CLEANUP_FUNCTIONS
+
+ucib_usage() {
+	usage_section "Core"
+	
+	usage_description "There are a few options to UCIB that are always
+	                   available regardless of how it is used."
+	
+	usage_option "--help" \
+	             "Display help for all loaded plugins."    \
+	             "The help you will see is dependent on"   \
+	             "which OS and cloud platform you have"    \
+	             "selected (if any)."
+	
+	usage_option "--debug" \
+	             "Print debug logs while executing."
+	
+	usage_option "--trace" \
+	             "Enable execution tracing."               \
+	             "Turn on the shell's execution tracing"   \
+	             "functionality ('set -x')"
+	
+	usage_option "--tasklist" \
+	             "Display the list of tasks to be run."    \
+	             "If this option is provided, no build"    \
+	             "will be made; instead, the list of"      \
+	             "tasks that would be run to complete the" \
+	             "build will be printed instead.  This is" \
+	             "mostly useful for plugin authors, to"    \
+	             "visualise where their custom tasks"      \
+	             "should fit, and also for the terminally" \
+	             "curious."
+	
+	usage_option "--name <imagename>" \
+	             "What to name the image."                 \
+	             "(default: 'ucib')"                       \
+	             "Provide a custom name for the image,"    \
+	             "which will be used in the output"        \
+	             "filename or in the cloud platform's"     \
+	             "image store."
+	             
+	usage_option "--os <os>" \
+	             "(REQUIRED) Select the OS to install."    \
+	             "The supported values for this option"    \
+	             "are the names of the directories in "    \
+	             "plugins/os/"
+	
+	usage_option "--cloud <cloud>" \
+	             "(REQUIRED) Select the cloud platform."   \
+	             "Every cloud platform has their own way"  \
+	             "of generating a machine image.  This"    \
+	             "option gives UCIB the hint it needs to"  \
+	             "know how to generate the image."         \
+	             "Valid values for this option are the"    \
+	             "names of directories in plugins/cloud/"
+
+	usage_option "--plugin <plugin>" \
+	             "Load an additional plugin."              \
+	             "If you wish UCIB to load a completely"   \
+	             "custom plugin, you may do so with this"  \
+	             "option.  This should be required very"   \
+	             "rarely, as most plugins will be loaded"  \
+	             "for you automatically based on the"      \
+	             "command-line options you specify."
+}
+
+register_usage "ucib_usage"
+
+# There's a few Really Useful misc tasks that live in here
+load_plugin_or_die "misc/ucib"
+
+# Load any plugins the user explicitly requested
+parseopt "plugin" "true"
+while optval "plugin"; do
+	load_plugin_or_die "$(optval "plugin")"
+done
+
+# Load all build host support plugins, just in case there's something useful
+# in there for us
+for d in $(find "${ROOT}/plugins/host" -maxdepth 1 -type d -printf '%P\n'); do
+	load_plugin_or_die "host/${d}"
+done
+
+# Load the OS/cloud platform plugins the user asked for -- these will
+# typically pull in a bunch of other plugins, too
+parseopt "os" "true"
+parseopt "cloud" "true"
+
+os="$(optval "os" || true)"
+cloud="$(optval "cloud" || true)"
+
+load_plugin_if_exists "os/$os"
+load_plugin_if_exists "cloud/$cloud"
+
+# Now that we've loaded all our plugins, we can give the user help if they
+# requested it
+parseopt "help"
+if [ $(optval "help") = "y" ]; then
+	usage
+	exit 0
+fi
+
+# Or, otherwise, complain if they didn't give us everything we wanted
+if ! optval "os" >/dev/null; then
+	fatal "Required option --os <os> not provided.  Try $0 --help"
+fi
+
+if ! plugindir "os/$os" >/dev/null; then
+	fatal "Unknown OS: '$os'"
+fi
+
+if ! optval "cloud" >/dev/null; then
+	fatal "Required option --cloud <cloud> not provided.  Try $0 --help"
+fi
+
+if ! plugindir "cloud/$cloud" >/dev/null; then
+	fatal "Unknown cloud: '$cloud'"
+fi
+
+# Parse out the remaining global options
+parseopt "name" "true" "ucib"
+
+# If plugins didn't pluck out all of the provided command-line arguments,
+# then the user is probably very confused, and we should help 'em out by
+# letting them know.
+if [[ ${#ARGV} > 0 ]]; then
+	fatal "Unrecognised command line argument(s): '${ARGV[*]}'.  Try $0 --help"
+fi
+
+debug "Configuration options:"
+for k in "${!OPTS[@]}"; do
+	debug "$k => ${OPTS[$k]}"
+done
+
+if [ "${OPTS[tasklist]}" = "y" ]; then
+	for task in $(tasklist); do
+		echo "$task ($(plugin_from_path "${TASKS[$task]}"))"
+	done
+	exit 0
+fi
+
+trap "error 'There was an error during the build.  Tidying up before exiting.'; run_cleanups" EXIT
+
+# This is where all the action happens.  If anything bombs out here, we'll
+# exit immediately.
+run_tasks
+
+# Indicate to cleanup functions that the build did indeed finish
+# successfully, and thus they don't need to leave any entrails around for
+# later examination.
+BUILD_COMPLETE="y"
+
+run_cleanups
+
+info "Build complete."
+
+trap "" EXIT
