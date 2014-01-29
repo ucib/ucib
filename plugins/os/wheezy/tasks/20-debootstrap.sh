@@ -11,9 +11,9 @@ if ! debootstrap  \
            wheezy \
            "$TARGET" \
            "${OPTS[debootstrap-mirror]}" |& \
-               tee "${TARGET}/debootstrap_output" |
+               tee "${WORKSPACE}/debootstrap_output" |
                spin "Running debootstrap"; then
 	error "Debootstrap failed:"
-	cat "${TARGET}/debootstrap_output"
+	cat "${WORKSPACE}/debootstrap_output"
 	exit 1
 fi
