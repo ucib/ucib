@@ -33,10 +33,9 @@ parseopt "debootstrap-mirror" "true" "$first_mirror"
 
 load_plugin_or_die "partitioner/full-disk"
 load_plugin_or_die "misc/ext4-filesystem"
-load_plugin_or_die "misc/ssh-host-keys"
 
 install_packages_in_target() {
-	run_in_target apt-get install "$@"
+	run_in_target apt-get install "$@" | spin "Installing $*"
 }
 
 create_user() {
@@ -89,7 +88,7 @@ install_package_containing() {
 	if [ -z "$pkg" ]; then
 		return 1
 	else
-		run_in_target apt-get -y install "$pkg"
+		install_packages_in_target $pkg
 		return 0
 	fi
 }

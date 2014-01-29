@@ -6,7 +6,7 @@ esac
 
 if ! debootstrap  \
            --arch "${OPTS[arch]}" \
-           --include "udev,openssh-server,locales,sudo,${kernel},grub-pc" \
+           --include "udev,locales,sudo,${kernel},grub-pc" \
            --exclude "dmidecode" \
            wheezy \
            "$TARGET" \
