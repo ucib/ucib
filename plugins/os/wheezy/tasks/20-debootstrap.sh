@@ -1,12 +1,6 @@
-case "${OPTS[arch]}" in
-	"amd64") kernel="linux-image-amd64";;
-	"i386")  kernel="linux-image-686";;
-	*)       fatal "Unknown architecture: ${OPTS[arch]}"
-esac
-
 if ! debootstrap  \
            --arch "${OPTS[arch]}" \
-           --include "udev,locales,sudo,${kernel},grub-pc" \
+           --include "udev,locales \
            --exclude "dmidecode" \
            wheezy \
            "$TARGET" \

@@ -34,15 +34,24 @@ they can be empty, but they MUST exist.  Define them in your OS plugin's
 
  * `disable_console [keep1]` -- Turn off all consoles.  If the optional
    argument `[keep1]` is provided, then one console is left available.
+ 
+ * `grant_full_sudo <user>` -- Give the specified user full password-less
+   sudo privileges.
 
  * `install_init_script <file>` -- Install the specified file as an init
    script within the system, and enable it to be run at boot.  The name of
    service will be the basename of the file.
+ 
+ * `install_kernel` -- Install a suitable kernel package for the guest. 
+   This is split out because some environments (such as EC2) don't need
+   a kernel.
 
- * `install_package_containing <file>` -- Given an absolute filename,
-   attempt to find a package containing that file and install it in the
-   image being built.  Returns 0 if a package was installed, and 1
-   otherwise, and does *not* produce any output.
+ * `install_package_containing <file> [file...]` -- Given one or more absolute
+   filenames, attempt to find a package containing one of those files and
+   install it in the image being built.  The files listed are checked one by
+   one, in the order specified (left-to-right), and the first file to be
+   found in a package is installed.  Returns 0 if a package was installed,
+   and 1 otherwise, and does *not* produce any output.
 
  * `set_hostname <hostname>` -- Set the system's hostname to the provided
    hostname.

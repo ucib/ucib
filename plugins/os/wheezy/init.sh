@@ -80,17 +80,29 @@ install_init_script() {
 }
 
 install_package_containing() {
-	local file="$1"
+
+	for file in "$@"; do
+		debug "Looking for a package containing '$file'"
+		pkg="$(apt-file --sources-list "${TARGET}/etc/apt/sources.list" -l search "$file")"
 	
-	debug "Looking for a package containing '$file'"
-	pkg="$(apt-file --sources-list "${TARGET}/etc/apt/sources.list" -l search "$file")"
+		if [ -n "$pkg" ]; then
+			install_packages_in_target $pkg
+			return 0
+		fi
+	done
 	
-	if [ -z "$pkg" ]; then
-		return 1
-	else
-		install_packages_in_target $pkg
-		return 0
-	fi
+	debug "No package found for any of: $@"
+	return 1
+}
+
+install_kernel() {
+	case "${OPTS[arch]}" in
+		"amd64") kernel="linux-image-amd64";;
+		"i386")  kernel="linux-image-686";;
+		*)       fatal "Unknown architecture: ${OPTS[arch]}"
+	esac
+	
+	install_packages_in_target "$kernel"
 }
 	
 set_hostname() {
@@ -99,4 +111,8 @@ set_hostname() {
 
 set_password() {
 	echo "$1:$2" | run_in_target chpasswd
+}
+
+grant_full_sudo() {
+	echo "$1 ALL=(ALL) NOPASSWD: ALL" >"${TARGET}/etc/sudoers.d/99_$1"
 }

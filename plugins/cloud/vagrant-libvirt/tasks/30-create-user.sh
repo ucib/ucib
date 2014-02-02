@@ -1,6 +1,6 @@
 create_user "vagrant" "Base Vagrant user"
 
-echo "vagrant ALL=(ALL) NOPASSWD: ALL" >"${TARGET}/etc/sudoers.d/99_vagrant"
+grant_full_sudo "vagrant"
         
 mkdir -p "${TARGET}/home/vagrant/.ssh"
 cat <<EOF >"${TARGET}/home/vagrant/.ssh/authorized_keys"
