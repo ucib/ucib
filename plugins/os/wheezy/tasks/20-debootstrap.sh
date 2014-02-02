@@ -1,6 +1,6 @@
 if ! debootstrap  \
            --arch "${OPTS[arch]}" \
-           --include "udev,locales \
+           --include "udev,locales" \
            --exclude "dmidecode" \
            wheezy \
            "$TARGET" \
