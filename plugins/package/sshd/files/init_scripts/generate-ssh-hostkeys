@@ -5,8 +5,8 @@
 # Required-Stop:  
 # Should-Start:   
 # Should-Stop:    
-# Default-Start:  S
-# Default-Stop:   
+# Default-Start:  0 1 2 3 4 5 6
+# Default-Stop:
 # Description:    Generate ssh host keys if they do not exist
 ### END INIT INFO
 
