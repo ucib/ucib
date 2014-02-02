@@ -16,7 +16,7 @@ else
 		fi
 		
 		initrd="$(basename $(ls "${TARGET}/boot/"init*img*))"
-		if -z "$initrd" ]; then
+		if [ -z "$initrd" ]; then
 			fatal "No initrd found"
 		fi
 		
