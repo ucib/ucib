@@ -40,7 +40,7 @@ elif run_in_target grub-install --version | grep -q "0\\.97"; then
 	echo "(hd0) /dev/mapper/hda" >"${TARGET}/boot/grub/device.map"
 	echo "/dev/mapper/hda1 / ext4 defaults 0 0" >"${TARGET}/etc/mtab"
 	
-	run_in_target /sbin/grub-install /dev/mapper/hda
+	run_in_target /sbin/grub-install /dev/mapper/hda >/dev/null 2>&1
 	
 	# Replace with a real device.map
 	echo "(hd0) /dev/vda" >"${TARGET}/boot/grub/device.map"
