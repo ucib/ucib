@@ -1,2 +1,2 @@
-zerofree "${PARTITIONS[/]}" -v | spin "Compacting raw image file"
+zerofree "${PARTITIONS[/]}" -v 2>&1 | spin "Compacting raw image file"
 
