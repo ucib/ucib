@@ -35,7 +35,10 @@ load_plugin_or_die "partitioner/full-disk"
 load_plugin_or_die "misc/ext4-filesystem"
 
 install_packages_in_target() {
-	run_in_target apt-get install "$@" | spin "Installing $*"
+	local orig_debian_frontend="$DEBIAN_FRONTEND"
+	export DEBIAN_FRONTEND="noninteractive"
+	run_in_target apt-get -y install "$@" | spin "Installing $*"
+	export DEBIAN_FRONTEND="$orig_debian_frontend"
 }
 
 create_user() {
@@ -80,7 +83,6 @@ install_init_script() {
 }
 
 install_package_containing() {
-
 	for file in "$@"; do
 		debug "Looking for a package containing '$file'"
 		pkg="$(apt-file --sources-list "${TARGET}/etc/apt/sources.list" -l search "$file")"

@@ -11,4 +11,4 @@ EOF
 run_in_target chown -R vagrant:vagrant /home/vagrant/.ssh
         
 # Don't require a TTY to sudo
-sed -i '/^Defaults requiretty/d' ${TARGET}/etc/sudoers
+sed -i '/^Defaults.*requiretty/d' ${TARGET}/etc/sudoers

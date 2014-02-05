@@ -1,2 +1,2 @@
-install_package_containing "/usr/sbin/grub-install" "/sbin/grub-install"
+install_packages_in_target "grub-pc" || install_package_containing "/sbin/grub-install"
 
