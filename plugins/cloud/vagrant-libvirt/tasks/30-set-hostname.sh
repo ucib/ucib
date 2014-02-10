@@ -1,1 +1,1 @@
-set_hostname "vagrant-debian-wheezy-${OPTS[arch]}"
+set_hostname "vagrant-$(optval os)-$(optval arch)"
