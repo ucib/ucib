@@ -22,6 +22,9 @@ os_wheezy_plugin_usage() {
 	             "the given package mirror.  Multiple mirror" \
 	             "URLs may be specified in a single option,"  \
 	             "separated by spaces."
+
+	usage_option "--proxy <url>" \
+	             "Use the given URL as an HTTP proxy."
 }
 
 register_usage "os_wheezy_plugin_usage"
@@ -30,6 +33,11 @@ parseopt "arch" "true" "amd64"
 parseopt "apt-mirrors" "true" "http://http.debian.net/"
 first_mirror="$(echo "${OPTS[apt-mirrors]}" | cut -d ' ' -f 1)"
 parseopt "debootstrap-mirror" "true" "$first_mirror"
+parseopt "proxy" "true"
+
+if optval proxy >/dev/null; then
+	export http_proxy="$(optval proxy)"
+fi
 
 load_plugin_or_die "partitioner/full-disk"
 load_plugin_or_die "misc/ext4-filesystem"
