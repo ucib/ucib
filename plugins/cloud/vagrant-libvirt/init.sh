@@ -7,6 +7,7 @@ cloud_vagrant_libvirt_usage() {
 
 register_usage "cloud_vagrant_libvirt_usage"
 	
+load_plugin_or_die "misc/vagrant"
 load_plugin_or_die "misc/raw-image-file"
 load_plugin_or_die "package/grub"
 load_plugin_or_die "package/sshd"
