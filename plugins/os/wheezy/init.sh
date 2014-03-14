@@ -93,8 +93,8 @@ install_init_script() {
 install_package_containing() {
 	for file in "$@"; do
 		debug "Looking for a package containing '$file'"
-		pkg="$(apt-file --sources-list "${TARGET}/etc/apt/sources.list" -l -x search "^$file\$")"
-	
+		pkg="$(run_in_target apt-file -l -x search "^$file\$")"
+
 		if [ -n "$pkg" ]; then
 			install_packages_in_target $pkg
 			return 0
