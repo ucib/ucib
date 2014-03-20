@@ -2,7 +2,8 @@ if lsb_release -is | grep -qi arch; then
 	debug "Found an ArchLinux host environment. Initialising host plugin"
 
 	# Update the pacman sync databases
-	pacman -Sy --noprogressbar |& spin "Updating pacman sync databases" || fatal "Coult not update pacman sync databases"
+	pacman -Sy --noprogressbar |& spin "Updating pacman sync databases" || \
+		fatal "Coult not update pacman sync databases"
 
 	install_program_in_host() {
 		local program="$1"
