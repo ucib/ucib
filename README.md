@@ -45,6 +45,7 @@ so you can install it by hand.
 At the time of writing, the following OSes are supported as build hosts:
 
  * Debian Wheezy
+ * Arch Linux
 
 
 # Supported guest OSes / cloud platforms
