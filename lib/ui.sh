@@ -23,6 +23,7 @@
 # exit code to use (defaults to 1)
 #
 fatal() {
+	log "FATAL: $1"
 	colourise "$(refold "FATAL ERROR: $1")" 1 >&2
 	exit "${2:-1}"
 }
@@ -34,6 +35,7 @@ fatal() {
 #    error <string>
 #
 error() {
+	log "ERROR: $1"
 	colourise "$(refold "ERROR: $1")" 1 >&2
 }
 
@@ -44,6 +46,7 @@ error() {
 #    warning <string>
 #
 warning() {
+	log "WARN:  $1"
 	colourise "$(refold "WARNING: $1")" 3 >&2
 }
 
@@ -54,6 +57,7 @@ warning() {
 #    info <string>
 #
 info() {
+	log "INFO:  $1"
 	colourise "$(refold "INFO: $1")" 6 >&2
 }
 
@@ -64,6 +68,7 @@ info() {
 #    debug <string>
 #
 debug() {
+	log "DEBUG: $1"
 	if [ "$DEBUG" = "y" ]; then
 		colourise "$(refold "DEBUG: $1")" 4 0 1 >&2
 	fi
@@ -172,4 +177,14 @@ colourise() {
 #
 refold() {
 	echo "$1" | sed 's/^[[:space:]]*//' | tr '\n' ' ' | fold -s -w 80
+}
+
+# Write a timestamped log message to the build log
+#
+# Usage:
+#
+#    log <string>
+#
+log() {
+	echo "$(date '+%F %T') $1" >>"${WORKSPACE}/build.log"
 }
