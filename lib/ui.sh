@@ -179,7 +179,7 @@ refold() {
 	echo "$1" | sed 's/^[[:space:]]*//' | tr '\n' ' ' | fold -s -w 80
 }
 
-# Write a timestamped log message to the build log
+# Write a timestamped log message to the build log.
 #
 # Usage:
 #
@@ -187,4 +187,26 @@ refold() {
 #
 log() {
 	echo "$(date '+%F %T') $1" >>"${WORKSPACE}/build.log"
+}
+
+# Log pipe output.  Specify the name of the program, or some other useful
+# identifier, as the argument to this function.
+#
+# Usage:
+#
+#    some-program | logpipe "some program"
+#
+# This will log the start and end times of the some-program run, and dump
+# everything that some-program outputs into the log file, neatly delineated
+# so you know exactly what happened.
+#
+# Note that if you want to catch stderr as well, you'll need to handle it
+# yourself, like this:
+#
+#    some-stderr-program 2>&1 | logpipe "some stderr program"
+#
+logpipe() {
+	log "$1 start -----8<-----"
+	cat >>"${WORKSPACE}/build.log"
+	log "$1  end  ----->8-----"
 }
