@@ -1,0 +1,18 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:       run-puppet
+# Required-Start: $all
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop:
+# Description:    Run the Puppet agent by kicking off a local run script
+### END INIT INFO
+
+if ! [ -x /etc/puppet/run ]; then
+	# Nothing to do here
+	exit 0
+fi
+
+exec /etc/puppet/run
