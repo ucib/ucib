@@ -103,7 +103,7 @@ spin() {
 	
 		echo -n "$(colourise "$cursor" 3)"
 		echo -en "\010"
-	done
+	done < <(logtee "$1")
 	
 	colourise "done!" 2 0 1
 }
