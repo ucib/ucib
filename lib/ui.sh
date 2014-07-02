@@ -186,7 +186,9 @@ refold() {
 #    log <string>
 #
 log() {
-	echo "$(date '+%F %T') $1" >>"${WORKSPACE}/build.log"
+	if [ -n "$WORKSPACE" ]; then
+		echo "$(date '+%F %T') $1" >>"${WORKSPACE}/build.log"
+	fi
 }
 
 # Log pipe output.  Specify the name of the program, or some other useful
@@ -206,7 +208,25 @@ log() {
 #    some-stderr-program 2>&1 | logpipe "some stderr program"
 #
 logpipe() {
-	log "$1 start -----8<-----"
-	cat >>"${WORKSPACE}/build.log"
-	log "$1  end  ----->8-----"
+	if [ -n "$WORKSPACE" ]; then
+		log "$1 start -----8<-----"
+		cat >>"${WORKSPACE}/build.log"
+		log "$1  end  ----->8-----"
+	fi
+}
+
+# Log pipe output, while passing the program output through to stdout again.
+# Otherwise, the calling conventions and behaviour of this function mirror
+# that of `logpipe`.
+#
+# Usage:
+#
+#    some-program | logtee "some program"
+#
+logtee() {
+	if [ -n "$WORKSPACE" ]; then
+		log "$1 start -----8<-----"
+		tee -a "${WORKSPACE}/build.log"
+		log "$1  end  ----->8-----"
+	fi
 }
