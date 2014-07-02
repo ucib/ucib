@@ -1,0 +1,64 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:       lxc-configure-network
+# Required-Start: $network
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start:  0 1 2 3 4 5 6
+# Default-Stop:
+# Description:    Configure networking based on lxc_* environment variables
+### END INIT INFO
+
+if [ "$container" != "lxc" ]; then
+	# Nothing to do here
+	exit 0
+fi
+
+if [ -n "$lxc_hostname" ]; then
+	hostname "$lxc_hostname"
+fi
+
+if [ -n "$lxc_interfaces" ]; then
+	for if in $lxc_interfaces; do
+		ip link set $if up
+
+		addr_var="lxc_${if}_v4addresses"
+		if [ -n "${!addr_var}" ]; then
+			for addr in ${!addr_var}; do
+				ip addr add $addr dev $if
+			done
+		fi
+
+		addr_var="lxc_${if}_v6addresses"
+		if [ -n "${!addr_var}" ]; then
+			for addr in ${!addr_var}; do
+				ip -6 addr add $addr dev $if
+			done
+		fi
+	done
+fi
+
+if [ -n "$lxc_v4gateway" ]; then
+	ip route add default via "$lxc_v4gateway"
+fi
+
+if [ -n "$lxc_v6gateway" ]; then
+	ip -6 route add default via "$lxc_v6gateway"
+fi
+
+if ! [ -e "/etc/resolv.conf" ]; then
+	if [ -n "$lxc_dns_domain" ]; then
+		echo "domain $lxc_dns_domain" >>/etc/resolv.conf
+	fi
+
+	if [ -n "$lxc_dns_search" ]; then
+		echo "search $lxc_dns_search" >>/etc/resolv.conf
+	fi
+
+	if [ -n "$lxc_dns_resolvers" ]; then
+		for res in $lxc_dns_resolvers; do
+			echo "nameserver $res" >>/etc/resolv.conf
+		done
+	fi
+fi
