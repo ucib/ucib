@@ -9,7 +9,7 @@ cleanup_mount_filesystem() {
 		p="${mount_list[-1]}"
 		unset mount_list[${#mount_list[@]}-1]
 		debug "Unmounting '${TARGET}$p'"
-		umount "${TARGET}$p"
+		umount -lf "${TARGET}$p"
 	done
 }
 
