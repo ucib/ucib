@@ -1,8 +1,10 @@
 if optval thinpool >/dev/null; then
 	lvcreate "-V$(optval lvsize)" --thinpool "$(optval thinpool)" \
-	         -n "$(optval lvname)" "$(optval vgname)"
+	         -n "$(optval lvname)" "$(optval vgname)" |& \
+	         logpipe "lvcreate"
 else
-	lvcreate "-L$(optval lvsize)" -n "$(optval lvname)" "$(optval vgname)"
+	lvcreate "-L$(optval lvsize)" -n "$(optval lvname)" \
+	         "$(optval vgname)" |& logpipe "lvcreate"
 fi
 
 declare -A PARTITIONS
