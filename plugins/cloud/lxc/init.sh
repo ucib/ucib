@@ -17,6 +17,6 @@ load_plugin_or_die "package/sudo"
 
 parseopt "lvm"
 
-if optval lvm >/dev/null; then
+if [ "$(optval lvm)" = "true" ]; then
 	load_plugin_or_die "misc/lvm-target"
 fi
