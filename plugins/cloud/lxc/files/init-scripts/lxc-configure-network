@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ### BEGIN INIT INFO
 # Provides:       lxc-configure-network
 # Required-Start: $network
@@ -26,7 +26,7 @@ if [ -n "$lxc_interfaces" ]; then
 		addr_var="lxc_${if}_v4addresses"
 		if [ -n "${!addr_var}" ]; then
 			for addr in ${!addr_var}; do
-				ip addr add $addr dev $if
+				ip addr add "$addr" dev $if
 			done
 		fi
 
