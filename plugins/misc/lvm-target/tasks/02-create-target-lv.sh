@@ -5,4 +5,5 @@ else
 	lvcreate "-L$(optval lvsize)" -n "$(optval lvname)" "$(optval vgname)"
 fi
 
+declare -A PARTITIONS
 PARTITIONS[/]="/dev/$(optval vgname)/$(optval lvname)"
