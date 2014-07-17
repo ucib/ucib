@@ -14,6 +14,6 @@ deb http://security.debian.org/ wheezy/updates main
 #deb-src http://security.debian.org/ wheezy/updates main
 EOF
 
-for repo in "${!EXTRA_APT_REPOS[@]}"; do
+for repo in "${EXTRA_APT_REPOS[@]}"; do
 	echo "$repo" >>"$sources_list"
 done
