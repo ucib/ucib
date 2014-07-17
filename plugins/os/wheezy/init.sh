@@ -41,6 +41,21 @@ first_mirror="$(echo "${OPTS[apt-mirrors]}" | cut -d ' ' -f 1)"
 parseopt "debootstrap-mirror" "true" "$first_mirror"
 parseopt "proxy" "true"
 
+declare -a EXTRA_APT_REPOS
+declare -a APT_KEY_URLS
+
+parseopt "apt-key-url" "true"
+while optval "apt-key-url" >/dev/null; do
+	APT_KEY_URLS+=("$(optval apt-key-url)")
+	parseopt "apt-key-url" "true"
+done
+
+parseopt "extra-repo" "true"
+while optval "extra-repo" >/dev/null; do
+	EXTRA_APT_REPOS+=("$(optval extra-repo)")
+	parseopt "extra-repo" "true"
+done
+
 if optval proxy >/dev/null; then
 	export http_proxy="$(optval proxy)"
 fi

@@ -14,9 +14,6 @@ deb http://security.debian.org/ wheezy/updates main
 #deb-src http://security.debian.org/ wheezy/updates main
 EOF
 
-parseopt "extra-repo" "true"
-
-while optval "extra-repo" >/dev/null; do
-	echo "$(optval extra-repo)" >>"$sources_list"
-	parseopt "extra-repo" "true"
+for repo in "${!EXTRA_APT_REPOS[@]}"; do
+	echo "$repo" >>"$sources_list"
 done
