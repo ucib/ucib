@@ -28,6 +28,9 @@ os_wheezy_plugin_usage() {
 
 	usage_option "--extra-repo <repoline>" \
 	             "Add an extra repo to the machine"
+
+	usage_option "--apt-key-url <url>" \
+	             "Install an APT key from the URL given"
 }
 
 register_usage "os_wheezy_plugin_usage"
