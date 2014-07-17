@@ -25,6 +25,9 @@ os_wheezy_plugin_usage() {
 
 	usage_option "--proxy <url>" \
 	             "Use the given URL as an HTTP proxy."
+
+	usage_option "--extra-repo <repoline>" \
+	             "Add an extra repo to the machine"
 }
 
 register_usage "os_wheezy_plugin_usage"
