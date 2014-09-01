@@ -1,6 +1,10 @@
-if ! debootstrap  \
+if [ -x "$(which eatmydata)" ]; then
+	$emd="eatmydata"
+fi
+
+if ! $emd debootstrap  \
            --arch "${OPTS[arch]}" \
-           --include "udev,locales" \
+           --include "udev" \
            --exclude "dmidecode" \
            wheezy \
            "$TARGET" \
