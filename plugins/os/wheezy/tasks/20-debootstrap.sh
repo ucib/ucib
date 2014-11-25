@@ -1,5 +1,5 @@
 if [ -x "$(which eatmydata)" ]; then
-	$emd="eatmydata"
+	emd="eatmydata"
 fi
 
 if ! $emd debootstrap  \
