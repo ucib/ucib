@@ -1,6 +1,6 @@
 # The list of mount points, in shortest-to-longest order, so we mount them
 # correctly inside one another
-mount_list=($(for k in "${!PARTITIONS[@]}"; do echo "$k"; done | awk '{ print length(), $1 }' | sort -n | cut -d ' ' -f 2))
+mount_list=($(for k in "${!PARTITIONS[@]}"; do echo "$k"; done | grep ^/ | awk '{ print length(), $1 }' | sort -n | cut -d ' ' -f 2 || true))
 
 debug "Mount list is ${mount_list[@]}"
 

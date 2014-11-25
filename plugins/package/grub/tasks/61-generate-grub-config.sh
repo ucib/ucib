@@ -30,5 +30,3 @@ title Linux
 EOF
 	fi
 fi
-
-	
