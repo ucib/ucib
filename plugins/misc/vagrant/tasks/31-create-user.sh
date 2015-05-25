@@ -1,4 +1,4 @@
-create_user "vagrant" "Base Vagrant user"
+create_user "vagrant" "Base Vagrant user" "vagrant"
 
 grant_full_sudo "vagrant"
         
