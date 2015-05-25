@@ -4,7 +4,7 @@ cleanup_refresh_partitions() {
 
 register_cleanup "cleanup_refresh_partitions"
 
-kpartx -a "$BLOCK_DEVICE"
+kpartx -s -a "$BLOCK_DEVICE"
 
 # kpartx has a nasty habit of putting all its partitions under /dev/mapper,
 # which, of course, the partitioner isn't expected to know.  So, we need to
