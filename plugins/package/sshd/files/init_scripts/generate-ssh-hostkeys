@@ -13,13 +13,7 @@
 prog=$(basename $0)
 logger="logger -t $prog"
 
-types="rsa dsa ecdsa"
-
-for t in $types; do
-	keyfile="/etc/ssh/ssh_host_${t}_key"
-	
-	[ -f "$keyfile" ] || ssh-keygen -f "$keyfile" -t "$t" -C 'host' -N '' >/dev/null 2>&1
-done
+ssh-keygen -A
 
 # Output the public keys to the console
 # This allows user to get host keys securely through console log
