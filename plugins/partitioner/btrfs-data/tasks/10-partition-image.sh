@@ -1,0 +1,9 @@
+sfdisk -f -u S "$BLOCK_DEVICE" <<EOF >/dev/null 2>&1
+2048,2097152,83
+2099200,,83
+EOF
+
+declare -A PARTITIONS
+
+PARTITIONS[/]="${BLOCK_DEVICE}p1"
+PARTITIONS[/data]="${BLOCK_DEVICE}p2"
