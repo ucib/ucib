@@ -13,7 +13,9 @@ load_plugin_or_die "misc/raw-image-file"
 load_plugin_or_die "partitioner/required"
 load_plugin_or_die "misc/ext4-filesystem"
 
+load_plugin_or_die "package/dhclient"
 load_plugin_or_die "package/grub"
+load_plugin_or_die "package/nfs-client"
 load_plugin_or_die "package/sshd"
 load_plugin_or_die "package/sudo"
 
