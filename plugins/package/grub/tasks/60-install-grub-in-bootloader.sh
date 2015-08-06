@@ -24,11 +24,11 @@ if run_in_target grub-install --version | grep -q "1\\.99"; then
 	run_in_target grub-setup -d /boot/grub --root-device='(hd0)' "$BLOCK_DEVICE"
 
 	# Final, real device.map for boot
-	echo "(hd0) /dev/vda" >"${TARGET}/boot/grub/device.map"
+	echo "(hd0) $(disk_partition)" >"${TARGET}/boot/grub/device.map"
 
 	case "${PARTITIONS[/]}" in
 		/dev/mapper/loop*)
-			grub_device="$(echo "${PARTITIONS[/]}" | sed 's%^/dev/mapper/loop[0-9][0-9]*p%/dev/vda%')"
+			grub_device="$(echo "${PARTITIONS[/]}" | sed 's%^/dev/mapper/loop[0-9][0-9]*p%$(disk_partition)%')"
 			;;
 		/dev/*/*)
 			grub_device="$(echo "${PARTITIONS[/]}" |
@@ -44,7 +44,7 @@ elif run_in_target grub-install --version | grep -q "2\\."; then
 	run_in_target grub-install /dev/loop0
 
 	# Final, real device.map for boot
-	echo "(hd0) /dev/vda" >"${TARGET}/boot/grub/device.map"
+	echo "(hd0) $(disk_partition)" >"${TARGET}/boot/grub/device.map"
 elif run_in_target grub-install --version | grep -q "0\\.97"; then
 	# Oh *man*... I thought grub2 was weird
 
@@ -67,7 +67,7 @@ elif run_in_target grub-install --version | grep -q "0\\.97"; then
 	run_in_target /sbin/grub-install /dev/mapper/hda >/dev/null 2>&1
 
 	# Replace with a real device.map
-	echo "(hd0) /dev/vda" >"${TARGET}/boot/grub/device.map"
+	echo "(hd0) $(disk_partition)" >"${TARGET}/boot/grub/device.map"
 	rm -f "${TARGET}/etc/mtab"
 else
 	fatal "Unknown version of GRUB installed.  Bailing."

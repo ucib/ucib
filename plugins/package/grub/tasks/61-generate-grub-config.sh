@@ -25,7 +25,7 @@ default=0
 timeout=1
 title Linux
 	root (hd0,0)
-	kernel /boot/$kernel ro root=/dev/vda1
+	kernel /boot/$kernel ro root=$(disk_partition 1)
 	initrd /boot/$initrd
 EOF
 	fi

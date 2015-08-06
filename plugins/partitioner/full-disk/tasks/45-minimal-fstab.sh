@@ -1,1 +1,1 @@
-echo "/dev/vda1 / ext4 defaults 0 2" >>${TARGET}/etc/fstab
+echo "$(disk_partition 1) / ext4 defaults 0 2" >>${TARGET}/etc/fstab

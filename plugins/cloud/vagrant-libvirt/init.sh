@@ -16,3 +16,7 @@ load_plugin_or_die "misc/ext4-filesystem"
 load_plugin_or_die "package/grub"
 load_plugin_or_die "package/sshd"
 load_plugin_or_die "package/sudo"
+
+disk_partition() {
+	"/dev/vda$1"
+}
