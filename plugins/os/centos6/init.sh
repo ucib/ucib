@@ -95,6 +95,8 @@ install_package_containing() {
 
 install_kernel() {
 	install_packages_in_target "kernel"
+	local kernel_version="$(ls "${TARGET}/lib/modules")"
+	run_in_target dracut -f "/boot/initramfs-${kernel_version}.img" "${kernel_version}" |& spin "Building initramfs"
 }
 	
 set_hostname() {
