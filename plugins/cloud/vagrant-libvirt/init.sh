@@ -20,5 +20,5 @@ load_plugin_or_die "package/sshd"
 load_plugin_or_die "package/sudo"
 
 disk_partition() {
-	"/dev/vda$1"
+	echo "/dev/vda$1"
 }
