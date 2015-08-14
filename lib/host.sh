@@ -33,7 +33,7 @@
 #
 # Usage:
 #
-#    check_program_available <testcmd> <filename>
+#    check_program_available <testcmd> <filename> <autoinstall>
 #
 # The function will execute `<testcmd>`, and if that returns true (0), the
 # command will be deemed "available" and we'll return successfully.  If
@@ -43,18 +43,20 @@
 # needed options, etc if necessary.
 #
 # If the program is deemed to be "not available", then this function will
-# call `install_program_in_host`, which (by default) simply aborts the build
-# and asks the user to install the software necessary by hand.  However,
-# host OS plugins should override this default to provide a more intelligent
-# way of automatically installing the necessary software (such as searching
-# for the package that contains the program and installing it).  The
-# `<filename>` parameter will be useful in this effort, as it is the typical
-# name of the program on the system.
+# call `install_program_in_host` if `<autoinstall>` is `y` (the default).
+# Since `install_program_in_host` by default simply aborts the build and
+# asks the user to install the software necessary by hand, host OS plugins
+# should override this function to provide a more intelligent way of
+# automatically installing the necessary software (such as searching for the
+# package that contains the program and installing it).  The `<filename>`
+# parameter will be useful in this effort, as it is the typical name of the
+# program on the system.
 #
 check_program_available() {
 	local testcmd="$1"
 	local filename="$2"
-	
+	local autoinstall="${3:-y}"
+
 	debug "Checking if '$filename' is available by running '$1'"
 
 	if eval "$testcmd" >/dev/null 2>&1; then
@@ -62,17 +64,21 @@ check_program_available() {
 		# Eeeexcellent...
 		return 0
 	fi
-	
+
 	debug "'$filename' does not appear to be available"
-	
-	install_program_in_host "$2"
-	
-	hash -r
-	
-	if ! eval "$testcmd" >/dev/null 2>&1; then
-		fatal "The program '$filename' does not appear to be available,
-		      and I could not automatically install a suitable package
-		      to supply it.  Please install it manually."
+
+	if [ "$autoinstall" = "y" ]; then
+		install_program_in_host "$2"
+
+		hash -r
+
+		if ! eval "$testcmd" >/dev/null 2>&1; then
+			fatal "The program '$filename' does not appear to be available,
+			      and I could not automatically install a suitable package
+			      to supply it.  Please install it manually."
+		fi
+	else
+		return 1
 	fi
 }
 
